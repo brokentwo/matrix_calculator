@@ -1,0 +1,17 @@
+# Сборка
+build/
+app
+*.o
+*.a
+*.so
+*.dylib
+
+# Сгенерированная документация Doxygen
+docs/html/
+docs/latex/
+
+# Редакторы и система
+.vscode/
+.idea/
+.DS_Store
+compile_commands.json
