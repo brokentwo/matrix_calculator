@@ -39,7 +39,8 @@ int main() {
         print_titled("Sum A+B", sum);
         print_titled("Product A*B", product);
 
-        print_check("A*B equals [19 22; 43 50]", matrix::matrix_equals(product, expected, kTolerance));
+        print_check("A*B equals [19 22; 43 50]",
+                    matrix::matrix_equals(product, expected, kTolerance));
         print_check("A equals B", matrix::matrix_equals(a, b, kTolerance));
         print_check("A (2x2) equals row (1x3)", matrix::matrix_equals(a, row, kTolerance));
 
