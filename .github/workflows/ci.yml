@@ -23,7 +23,7 @@ jobs:
         run: |
           # Основное зеркало Ubuntu вместо зеркала GitHub, таймауты и повторы apt,
           # без долгого обновления man-db и без рекомендуемых пакетов
-          sudo sed -i 's#http://azure.archive.ubuntu.com#http://archive.ubuntu.com#g' /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null || true
+          echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
           sudo rm -f /var/lib/man-db/auto-update
           APT_OPTS="-o Acquire::Retries=3 -o Acquire::http::Timeout=30"
           sudo apt-get $APT_OPTS update
