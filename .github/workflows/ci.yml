@@ -15,8 +15,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Отключаем долгое обновление man-db и не ставим рекомендуемые пакеты
+          sudo rm -f /var/lib/man-db/auto-update
           sudo apt-get update
-          sudo apt-get install -y cmake g++ doxygen graphviz valgrind
+          sudo apt-get install -y --no-install-recommends cmake g++ doxygen graphviz valgrind
 
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
