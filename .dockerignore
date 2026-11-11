@@ -1,0 +1,6 @@
+build/
+docs/html/
+docs/latex/
+.git/
+.vscode/
+.DS_Store
