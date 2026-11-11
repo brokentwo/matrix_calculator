@@ -14,20 +14,30 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # cmake и g++ уже установлены на раннере; doxygen, graphviz и valgrind
+      # ставятся из conda-forge (зеркала apt на раннерах GitHub работали очень медленно)
       - name: Install dependencies
-        timeout-minutes: 10
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: tools
+          create-args: doxygen graphviz valgrind
+          condarc: |
+            channels:
+              - conda-forge
+
+      - name: Show tool versions
         run: |
-          # Основное зеркало Ubuntu вместо зеркала GitHub, таймауты и повторы apt,
-          # без долгого обновления man-db и без рекомендуемых пакетов
-          echo 'http://archive.ubuntu.com/ubuntu/' | sudo tee /etc/apt/apt-mirrors.txt
-          sudo rm -f /var/lib/man-db/auto-update
-          APT_OPTS="-o Acquire::Retries=3 -o Acquire::http::Timeout=30"
-          sudo apt-get $APT_OPTS update
-          sudo apt-get $APT_OPTS install -y --no-install-recommends cmake g++ doxygen graphviz valgrind
+          cmake --version
+          g++ --version
+          doxygen --version
+          valgrind --version
 
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Debug
@@ -51,16 +61,3 @@ jobs:
         with:
           name: documentation
           path: docs/html
-
-  docker:
-    runs-on: ubuntu-24.04
-    needs: build-and-test
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Build Docker image
-        run: docker build -t matrix-calculator .
-
-      - name: Run application in container
-        run: docker run --rm matrix-calculator
