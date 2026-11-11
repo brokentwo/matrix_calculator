@@ -27,10 +27,21 @@ jobs:
         uses: mamba-org/setup-micromamba@v2
         with:
           environment-name: tools
-          create-args: doxygen graphviz valgrind
+          create-args: doxygen graphviz
           condarc: |
             channels:
               - conda-forge
+
+      # Valgrind берётся из apt: ему нужна отладочная информация системной glibc.
+      # Зеркало Azure было недоступно, поэтому задан список альтернативных зеркал
+      - name: Install Valgrind
+        timeout-minutes: 8
+        run: |
+          printf '%s\n' http://mirrors.edge.kernel.org/ubuntu/ http://mirror.yandex.ru/ubuntu/ http://archive.ubuntu.com/ubuntu/ | sudo tee /etc/apt/apt-mirrors.txt
+          sudo rm -f /var/lib/man-db/auto-update
+          APT_OPTS="-o Acquire::Retries=2 -o Acquire::http::Timeout=20"
+          sudo apt-get $APT_OPTS update || true
+          sudo apt-get $APT_OPTS install -y --no-install-recommends valgrind
 
       - name: Show tool versions
         run: |
