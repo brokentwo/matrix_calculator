@@ -36,8 +36,17 @@ jobs:
 
       - name: Check memory leaks
         run: |
+          set -o pipefail
           valgrind --leak-check=full --error-exitcode=1 \
-            ./build/tests/matrix_tests
+            ./build/tests/matrix_tests 2>&1 | tee valgrind.log
+
+      - name: Publish Valgrind summary
+        if: always()
+        run: |
+          echo "### Valgrind (matrix_tests)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E '==[0-9]+==' valgrind.log | tail -15 >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Generate documentation
         run: doxygen Doxyfile
